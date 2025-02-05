@@ -19,12 +19,23 @@ def compare_files(file1, file2):
 
     common_keys = sorted(set(data1.keys()) & set(data2.keys()))
 
+    if not common_keys:
+        print("No matching timestamps found.")
+        return
+
     print(f"{'EX_TS_MS':<15} {'LOCAL_TS_1':<15} {'LOCAL_TS_2':<15} {'DIFF_MS':<10}")
     print("=" * 55)
 
+    diffs = []
     for ex_ts in common_keys:
         local_diff = data2[ex_ts] - data1[ex_ts]
+        diffs.append(local_diff)
         print(f"{ex_ts:<15} {data1[ex_ts]:<15} {data2[ex_ts]:<15} {local_diff:<10}")
+
+    # Calculate average difference
+    avg_diff = sum(diffs) / len(diffs)
+    print("=" * 55)
+    print(f"Average DIFF_MS: {avg_diff:.2f} ms")
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
