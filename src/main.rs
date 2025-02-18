@@ -1,7 +1,7 @@
 use std::io::Write;
 use std::time::Duration;
 
-use hyper_latency::{Socket, LatErr};
+use hyper_latency::{LatErr, Socket};
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
 fn string_to_f64<'de, D>(deserializer: D) -> Result<f64, D::Error>
@@ -142,10 +142,43 @@ impl HyperRawPriceConfig {
     }
 }
 
+#[derive(Debug, Deserialize, Serialize)]
+pub struct SequencerResponse {
+    pub version: u64,
+    pub messages: Vec<SequencerMessage>,
+}
+
+#[derive(Debug, Deserialize, Serialize)]
+pub struct SequencerMessage {
+    #[serde(rename = "sequenceNumber")]
+    pub sequence_number: u64,
+    // Add other fields as needed based on the full message structure
+}
+
+struct Arbitrum {}
+
 pub fn main() {
-    let c = HyperRawPriceConfig {
-        quote: "USDC".into(),
-        assets: vec!["ETH".into()],
-    };
-    c._run().unwrap();
+    let url = "wss://arb1.arbitrum.io/feed";
+    let s = Socket::new(&url).unwrap();
+    let mut file = std::fs::OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open("arb.txt")
+        .unwrap();
+
+    loop {
+        let r = s.read().unwrap();
+        match serde_json::from_str::<SequencerResponse>(&r) {
+            Ok(msg) => {
+                writeln!(
+                    file,
+                    "SEQ_NUM={} LOCAL_TS_MS={}",
+                    msg.messages[0].sequence_number,
+                    timed::now().as_millis()
+                )
+                .unwrap();
+            }
+            Err(e) => eprintln!("Failed to parse message: {}", e),
+        }
+    }
 }
