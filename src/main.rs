@@ -168,6 +168,7 @@ pub fn main() {
 
     loop {
         let r = s.read().unwrap();
+        println!("{}", r);
         match serde_json::from_str::<SequencerResponse>(&r) {
             Ok(msg) => {
                 writeln!(
