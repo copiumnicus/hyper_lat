@@ -16,11 +16,12 @@ def read_file(filename):
 
 def compare_files():
     # List of files to compare
-    files = ['brazil.txt', 'london.txt', 'ncali.txt', 'nvirginia.txt', 'tokyo.txt']
+    files = ['brazil.txt', 'london.txt', 'ncali.txt', 'nvirginia.txt', 'tokyo.txt', 'oregon.txt']
     locations = {
         'tokyo.txt': "Tokyo",
         'brazil.txt': 'Brazil',
         'london.txt': 'London',
+        'oregon.txt': 'Oregon',
         'ncali.txt': 'N. California',
         'nvirginia.txt': 'N. Virginia'
     }
